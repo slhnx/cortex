@@ -1,13 +1,13 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
+import { authClient } from "@/lib/auth-client";
 import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
 import {
   Form,
   FormControl,
@@ -16,7 +16,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form";
-import { authClient } from "@/lib/auth-client";
+import { Input } from "@workspace/ui/components/input";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
@@ -29,6 +30,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,7 +56,10 @@ export default function LoginPage() {
 
       if (res.error) {
         setServerError(res.error.message || "Invalid credentials");
+        return;
       }
+
+      router.push("/dashboard")
     } catch (err) {
       setServerError("An unexpected error occurred. Please try again.");
     } finally {
