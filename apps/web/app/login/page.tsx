@@ -1,9 +1,68 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
 import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form";
+import { authClient } from "@/lib/auth-client";
+
+const loginSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(8, "Password must be at least 8 characters"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(data: LoginFormValues) {
+    setIsLoading(true);
+    setServerError(null);
+
+    try {
+      const res = await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+        callbackURL: "/",
+      });
+
+      if (res.error) {
+        setServerError(res.error.message || "Invalid credentials");
+      }
+    } catch (err) {
+      setServerError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <div className="flex min-h-svh items-center justify-center px-6">
+    <div className="flex min-h-svh items-center justify-center px-6 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8">
           <Link
@@ -20,36 +79,57 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {serverError && (
+              <div className="rounded-md bg-destructive/10 p-3 text-xs text-destructive">
+                {serverError}
+              </div>
+            )}
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-1.5 block text-sm font-medium"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <Button className="w-full" size="lg">
-            Sign in
-          </Button>
-        </div>
+
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
+        </Form>
 
         <p className="mt-6 text-sm text-muted-foreground">
           No account?{" "}
