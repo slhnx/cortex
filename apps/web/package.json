@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@cortex/db": "*",
     "@tabler/icons-react": "^3.46.0",
     "@workspace/ui": "*",
     "next": "16.2.6",
