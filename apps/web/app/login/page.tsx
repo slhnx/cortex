@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { IconBrandGithub } from "@tabler/icons-react";
 
 import { authClient } from "@/lib/auth-client";
+import { useSocialAuth } from "@/hooks/use-social-auth";
 import { Button } from "@workspace/ui/components/button";
 import {
   Form,
@@ -35,6 +37,8 @@ export default function LoginPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { loginWithGithub, isSocialLoading } = useSocialAuth(setServerError);
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -59,7 +63,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard")
+      router.push("/dashboard");
     } catch (err) {
       setServerError("An unexpected error occurred. Please try again.");
     } finally {
@@ -136,6 +140,27 @@ export default function LoginPage() {
             </Button>
           </form>
         </Form>
+
+        <div className="relative my-6 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border/40" />
+          </div>
+          <div className="relative bg-background px-2 text-xs text-muted-foreground">
+            Or continue with
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          type="button"
+          className="w-full"
+          size="lg"
+          onClick={loginWithGithub}
+          disabled={isSocialLoading}
+        >
+          <IconBrandGithub className="mr-2 size-4" />
+          {isSocialLoading ? "Connecting to GitHub..." : "Continue with GitHub"}
+        </Button>
 
         <p className="mt-6 text-sm text-muted-foreground">
           No account?{" "}

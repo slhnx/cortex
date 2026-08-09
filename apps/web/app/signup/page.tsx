@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { IconBrandGithub } from "@tabler/icons-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -17,6 +18,7 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form";
 import { authClient } from "@/lib/auth-client";
+import { useSocialAuth } from "@/hooks/use-social-auth";
 import { useRouter } from "next/navigation";
 
 const signupSchema = z
@@ -41,6 +43,8 @@ export default function SignupPage() {
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { loginWithGithub, isSocialLoading } = useSocialAuth(setServerError);
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -69,7 +73,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.push('/dashboard')
+      router.push('/dashboard');
     } catch (err) {
       setServerError("An unexpected error occurred. Please try again.");
     } finally {
@@ -184,6 +188,27 @@ export default function SignupPage() {
             </Button>
           </form>
         </Form>
+
+        <div className="relative my-6 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border/40" />
+          </div>
+          <div className="relative bg-background px-2 text-xs text-muted-foreground">
+            Or continue with
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          type="button"
+          className="w-full"
+          size="lg"
+          onClick={loginWithGithub}
+          disabled={isSocialLoading}
+        >
+          <IconBrandGithub className="mr-2 size-4" />
+          {isSocialLoading ? "Connecting to GitHub..." : "Sign up with GitHub"}
+        </Button>
 
         <p className="mt-6 text-sm text-muted-foreground">
           Already have an account?{" "}
