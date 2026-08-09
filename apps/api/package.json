@@ -1,0 +1,24 @@
+{
+  "name": "@cortex/api",
+  "scripts": {
+    "dev": "tsx watch server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cortex/contracts": "^1.0.0",
+    "@cortex/db": "*",
+    "@ts-rest/express": "^3.52.1",
+    "body-parser": "^2.3.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@workspace/typescript-config": "*",
+    "tsx": "^4.23.11",
+    "typescript": "^5"
+  }
+}
