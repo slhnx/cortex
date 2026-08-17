@@ -2,8 +2,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { z } from 'zod';
 
-// Load the .env file relative to the file location
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Load the .env file relative to the file location in local development
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  dotenv.config({ path: path.resolve(__dirname, '.env') });
+}
 
 const envSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(3333),
