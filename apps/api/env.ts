@@ -1,18 +1,17 @@
 import dotenv from 'dotenv';
+import path from 'path';
 import { z } from 'zod';
 
-// Load the .env file in the current working directory
-dotenv.config();
+// Load the .env file relative to the file location
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const envSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(3333),
-  DATABASE_URL: z.string().url("DATABASE_URL must be a valid database connection URL"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
 const result = envSchema.safeParse({
   PORT: process.env.PORT,
-  DATABASE_URL: process.env.DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
 });
 
