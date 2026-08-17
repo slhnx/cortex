@@ -4,8 +4,10 @@ import bodyParser from 'body-parser';
 import { initServer } from '@ts-rest/express';
 import { createExpressEndpoints } from '@ts-rest/express';
 import { healthContract } from '@cortex/contracts';
+import dotenv from 'dotenv';
 import { db } from '@cortex/db';
-import { env } from './env';
+
+dotenv.config();
 
 const app = express();
 
@@ -37,7 +39,7 @@ const router = s.router(healthContract, {
 
 createExpressEndpoints(healthContract, router, app);
 
-const port = env.PORT;
+const port = process.env.PORT || 3333;
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);
 });
