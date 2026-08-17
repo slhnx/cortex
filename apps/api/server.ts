@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import { initServer } from '@ts-rest/express';
 import { createExpressEndpoints } from '@ts-rest/express';
 import { healthContract } from '@cortex/contracts';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 import { db } from '@cortex/db';
 
 dotenv.config();
